@@ -1,0 +1,4 @@
+/node_modules
+/*.docset
+/*.tgz
+.DS_Store

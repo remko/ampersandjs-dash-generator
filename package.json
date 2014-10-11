@@ -1,0 +1,56 @@
+{
+  "name": "ampersandjs-dash-generator",
+  "version": "0.0.1",
+  "description": "Generate a Dash docset for Ampersand.js",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "keywords": [
+    "dash"
+  ],
+  "author": "Remko Tronçon",
+  "license": "BSD",
+	"repository": {
+    "type": "git",
+    "url": "https://github.com/remko/ampersandjs-dash-generator"
+  },
+  "dependencies": {
+    "async": "^0.9.0",
+    "fs-extra": "^0.12.0",
+    "fstream": "^1.0.2",
+    "jade": "^1.7.0",
+    "module-details": "^2.0.1",
+    "mustache": "^0.8.2",
+    "sqlite3": "^3.0.2",
+    "tar": "^1.0.1",
+    "underscore": "^1.7.0"
+  },
+  "config": {
+    "name": "Ampersand.js",
+    "id": "ampersandjs",
+    "modules": [
+      "ampersand-state",
+      "ampersand-model",
+      "ampersand-collection",
+      "ampersand-rest-collection",
+      "ampersand-view",
+      "ampersand-view-switcher",
+      "ampersand-router",
+      "ampersand-dom-bindings",
+      "ampersand-form-view",
+      "ampersand-input-view",
+      "ampersand-checkbox-view",
+      "ampersand-array-input-view",
+      "ampersand-select-view"
+    ],
+    "sectionsToRemove": [
+      "credits",
+      "license",
+      "browser support",
+      "browser compatibility",
+      "changelog",
+      "installing",
+      "install"
+    ]
+  }
+}
