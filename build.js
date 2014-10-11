@@ -14,6 +14,7 @@ var sqlite3 = require('sqlite3').verbose();
 var tar = require("tar");
 var fstream = require("fstream");
 var zlib = require("zlib");
+var toCamelCase = require("to-camel-case");
 
 var DOCSET_DIR = __dirname + "/" + config.name + ".docset";
 
@@ -21,35 +22,44 @@ var DOCSET_DIR = __dirname + "/" + config.name + ".docset";
 // Helpers
 ////////////////////////////////////////////////////////////////////////////////
 
-function toc2indexEntries(module, toc) {
+function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.substring(1);
+}
+
+function toc2indexEntries(toc, module, isClass) {
 	var indexEntries = [];
 	indexEntries.push({name: module, type: "Module", anchor: ""});
-	toc.forEach(function (entry) {
-		if (entry.depth === 3) {
-			if (!entry.text.match(/.*<code>/)) {
-				return;
+	if (isClass) {
+		var className = capitalize(toCamelCase(module));
+		indexEntries.push({name: className, type: "Class", anchor: ""});
+
+		toc.forEach(function (entry) {
+			if (entry.depth === 3) {
+				if (!entry.text.match(/.*<code>/)) {
+					return;
+				}
+				var name = entry.text
+					.replace(/\s+<code>.*/, "")
+					.replace(/\/.*/, "");
+				var type;
+				if (name.match(/^constructor/)) {
+					name = className;
+					type = "Constructor";
+				}
+				else {
+					type = "Method";
+					name = className + "." + name;
+				}
+				indexEntries.push({name: name, type: type, anchor: entry.linkText});
 			}
-			var name = entry.text
-				.replace(/\s+<code>.*/, "")
-				.replace(/\/.*/, "");
-			var type;
-			if (name.match(/^constructor/)) {
-				name = module;
-				type = "Constructor";
-			}
-			else {
-				type = "Method";
-				name = module + "." + name;
-			}
-			indexEntries.push({name: name, type: type, anchor: entry.linkText});
-		}
-	});
+		});
+	}
 	return indexEntries;
 }
 
 function getModules(cb) {
 	var modules = {};
-	async.map(config.modules, function (module, cb) {
+	async.map(config.modules.concat(config.classModules), function (module, cb) {
 		moduleDetails(module, { sectionsToRemove: config.sectionsToRemove }, cb);
 	},
 	function (err, modules) {
@@ -92,7 +102,9 @@ getModules(function (modules) {
 			renderModule({module: module}));
 
 		// Insert entries into the index
-		toc2indexEntries(module.title, module.toc).forEach(function (entry) {
+		var isClass = _.contains(config.classModules, module.title);
+		var entries = toc2indexEntries(module.toc, module.title, isClass);
+		entries.forEach(function (entry) {
 			db.run("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES (?, ?, ?)", 
 				entry.name, entry.type, module.title + ".html#" + entry.anchor);
 		});
