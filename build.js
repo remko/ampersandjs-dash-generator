@@ -96,6 +96,16 @@ db.run("CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, p
 // Process modules
 getModules(function (modules) {
 	modules.forEach(function (module) {
+		// Fix links in the html. 
+		// Not the most elegant or efficient solution, but who cares?
+		modules.forEach(function (otherModule) {
+			module.html = module.html
+				.replace("href=\"#" + otherModule.title + "\"", "href=\"" + otherModule.title + ".html\"")
+				.replace("href=\"http://ampersandjs.com/docs/#" + otherModule.title + "\"", "href=\"" + otherModule.title + ".html\"")
+				.replace("href=\"http://github.com/ampersandjs/" + otherModule.title + "\"", "href=\"" + otherModule.title + ".html\"")
+				.replace("href=\"https://github.com/ampersandjs/" + otherModule.title + "\"", "href=\"" + otherModule.title + ".html\"");
+		});
+		
 		// Write the documentation file
 		fsExtra.outputFileSync(
 			DOCSET_DIR + "/Contents/Resources/Documents/" + module.title + ".html", 
