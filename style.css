@@ -20,6 +20,10 @@ h1, h2, h3, h4 {
   line-height: 1.3;
 }
 
+h3 {
+	font-size: 1.2em;
+}
+
 h3 code {
 	background-color: #fff;
 	font-size: .7em;
@@ -51,6 +55,11 @@ pre code {
 	word-wrap: pre
 }
 
+.anchor {
+	position: relative;
+	display: block;
+	margin-top: 45px;
+}
 
 .logo-ampersand {
 	min-height: 34px;
