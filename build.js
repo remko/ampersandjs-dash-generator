@@ -15,6 +15,7 @@ var tar = require("tar");
 var fstream = require("fstream");
 var zlib = require("zlib");
 var toCamelCase = require("to-camel-case");
+var jsdom = require("jsdom");
 
 var DOCSET_DIR = __dirname + "/" + config.name + ".docset";
 
@@ -26,6 +27,7 @@ function capitalize(string) {
   return string.charAt(0).toUpperCase() + string.substring(1);
 }
 
+// Convert NPM TOC documentation to index entries
 function toc2indexEntries(toc, module, isClass) {
 	var indexEntries = [];
 	indexEntries.push({name: module, type: "Module", anchor: "", module: module});
@@ -57,6 +59,7 @@ function toc2indexEntries(toc, module, isClass) {
 	return indexEntries;
 }
 
+// Fetch module information from NPM
 function getModules(cb) {
 	var modules = {};
 	async.map(config.modules.concat(config.classModules), function (module, cb) {
@@ -66,6 +69,19 @@ function getModules(cb) {
 		if (err) { throw err; }
 		cb(modules);
 	});
+}
+
+// Extract all links a piece of HTML
+function getLinks(html, cb) {
+	jsdom.env({html: html, done: function (errors, window) {
+		if (errors) { return cb(errors); }
+		var result = [];
+		var links = window.document.querySelectorAll("a[href]");
+		for (var i = 0; i < links.length; ++i) {
+			result.push(links[i].href);
+		}
+		cb(null, result);
+	}});
 }
 
 var renderModule = jade.compileFile(__dirname + "/module.jade", { pretty: true });
@@ -98,13 +114,18 @@ getModules(function (modules) {
 	var allEntries = [];
 	modules.forEach(function (module) {
 		// Fix links in the html. 
-		// Not the most elegant or efficient solution, but who cares?
-		modules.forEach(function (otherModule) {
+		// Not the most elegant or efficient solution. Clean this up.
+		var otherModules = _.sortBy(_.pluck(modules, 'title'), function (name) { return -name.length; });
+		otherModules.forEach(function (otherModule) {
 			module.html = module.html
-				.replace("href=\"#" + otherModule.title + "\"", "href=\"" + otherModule.title + ".html\"")
-				.replace("href=\"http://ampersandjs.com/docs/#" + otherModule.title + "\"", "href=\"" + otherModule.title + ".html\"")
-				.replace("href=\"http://github.com/ampersandjs/" + otherModule.title + "\"", "href=\"" + otherModule.title + ".html\"")
-				.replace("href=\"https://github.com/ampersandjs/" + otherModule.title + "\"", "href=\"" + otherModule.title + ".html\"");
+				.replace("href=\"#" + otherModule + "\"", "href=\"" + otherModule + ".html\"")
+				.replace("href=\"http://ampersandjs.com/docs/#" + otherModule + "\"", "href=\"" + otherModule + ".html\"")
+				.replace("href=\"http://ampersandjs.com/docs/#" + otherModule + "-", "href=\"" + otherModule + ".html#" + otherModule + "-")
+				.replace("href=\"http://ampersandjs.com/docs#" + otherModule + "\"", "href=\"" + otherModule + ".html\"")
+				.replace("href=\"http://ampersandjs.com/docs#" + otherModule + "-", "href=\"" + otherModule + ".html#" + otherModule + "-")
+				.replace("href=\"http://github.com/ampersandjs/" + otherModule + "\"", "href=\"" + otherModule + ".html\"")
+				.replace("href=\"https://github.com/ampersandjs/" + otherModule + "\"", "href=\"" + otherModule + ".html\"")
+				.replace("href=\"https://github.com/AmpersandJS/" + otherModule + "\"", "href=\"" + otherModule + ".html\"");
 		});
 		
 		// Write the documentation file
@@ -134,4 +155,34 @@ getModules(function (modules) {
 		.pipe(fs.createWriteStream(config.name + ".tgz"));
 
 	db.close();
+
+	// Collect external links
+	async.map(modules, function (module, cb) {
+		getLinks(module.html, cb);
+	}, 
+	function (err, results) {
+		var externalLinks = _.chain(_.uniq(_.flatten(results)))
+			.map(function (link) { return link.toLowerCase(); })
+			.filter(function (link) { return link.indexOf("file:") !== 0; })
+			.reject(function (link) { return link.match(/^http:\/\/ampersandjs.com\/learn/); })
+			.reject(function (link) { return link.match(/^http:\/\/underscorejs.org\//); })
+			.reject(function (link) { return link.match(/^http:\/\/backbonejs.org\//); })
+			.reject(function (link) { return link.match(/^https:\/\/developer.mozilla.org\//); })
+			.reject(function (link) { return link.match(/^http:\/\/twitter.com\//); })
+			.difference([
+				"https://github.com/henrikjoreteg/key-tree-store",
+				"https://www.npmjs.org/package/backbone-events-standalone",
+				"http://github.com/raynos/xhr",
+				"https://github.com/raynos/xhr",
+				"https://github.com/substack/tape",
+				"https://github.com/juliangruber/tape-run"
+			])
+			.value();
+		if (externalLinks.length > 0) {
+			console.warn("Warning: External links found:");
+			externalLinks.forEach(function (link) {
+				console.log("- " + link);
+			});
+		}
+	});
 });
