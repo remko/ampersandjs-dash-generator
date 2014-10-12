@@ -163,7 +163,10 @@ getModules(function (modules) {
 	);
 	fsExtra.outputFileSync(
 		FEED_DIR + "/" + config.name + ".html",
-		renderFeed({feed: "dash-feed://" + encodeURIComponent(config.feedBaseURL + "/" + config.name + ".xml")}));
+		renderFeed({
+			feed: "dash-feed://" + encodeURIComponent(config.feedBaseURL + "/" + config.name + ".xml"),
+			name: config.name
+		}));
 
 	// Tar everything up into a tarball
 	fstream.Reader({ path: DOCSET_DIR, type: "Directory"})
