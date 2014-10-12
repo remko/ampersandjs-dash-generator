@@ -39,16 +39,23 @@ function toc2indexEntries(toc, module, isClass) {
 
 		toc.forEach(function (entry) {
 			if (entry.depth === 3) {
-				if (!entry.text.match(/.*<code>/)) {
-					return;
-				}
 				var name = entry.text
 					.replace(/\s+<code>.*/, "")
 					.replace(/\/.*/, "");
+
 				var type;
-				if (name.match(/^constructor/)) {
-					name = className;
+				if (name.match(/proxied ES5|underscore methods/)) {
+					return;
+				}
+				else if (name.match(/^constructor/)) {
 					type = "Constructor";
+					name = className;
+				}
+				else if (entry.text.match(/extend\(/) && name !== "extend" 
+						|| !entry.text.match(/<code>.*\(/) 
+						|| _.contains(["url", "urlRoot"], name)) {
+					type = "Property";
+					name = className + "." + name;
 				}
 				else {
 					type = "Method";

@@ -25,3 +25,9 @@ html
 			for entry in entries.Method
 				li 
 					a(href="#{entry.module}.html##{entry.anchor}") #{entry.name}
+
+		h2 Properties
+		ul
+			for entry in entries.Property
+				li 
+					a(href="#{entry.module}.html##{entry.anchor}") #{entry.name}
