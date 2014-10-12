@@ -5,5 +5,7 @@ html
 		link(rel="stylesheet", type="text/css", href="style.css")
 
 	body
-		h1= module.name
+		h1 #{module.name}
+			| 
+			a.source(href="https://github.com/AmpersandJS/#{module.name}/blob/master/#{module.name}.js") [source]
 		div!= module.html
