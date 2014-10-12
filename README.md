@@ -1,5 +1,24 @@
-# `ampersand-dash-generator`: Generate a Dash docset for Ampersand.js
+# [ampersandjs-dash-generator: Generate a Dash docset for Ampersand.js](http://el-tramo.be/ampersandjs-dash-generator)
 
-## Running
+Generates a [Dash](http://kapeli.com/dash) docset of all [Ampersand.js](http://ampersandjs.com) modules.
+
+If you are just interested in installing the docset (and not in building it yourself), just
+[click here to install the docset](http://cdn.el-tramo.be/dash/Ampersand.js.html).
+
+## Installation
+
+To install the prerequisites, run
+
+		npm install
+
+
+## Usage
+
+To build the docset, run
 
 		npm run build
+
+Use the resulting docset by adding the `.docset` to the *Docsets* tab of Dash.
+
+The build command also generates a Dash feed in `feed`. The `.html` file in the `feed` dir contains the Dash URL,
+which will install the docset when it is clicked.
