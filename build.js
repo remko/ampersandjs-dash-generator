@@ -139,11 +139,6 @@ getModules(function (modules) {
 				.replace("href=\"https://github.com/AmpersandJS/" + otherModule + "\"", "href=\"" + otherModule + ".html\"");
 		});
 		
-		// Write the documentation file
-		fsExtra.outputFileSync(
-			DOCSET_DIR + "/Contents/Resources/Documents/" + module.title + ".html", 
-			renderModule({module: module}));
-
 		// Insert entries into the index
 		var isClass = _.contains(config.classModules, module.title);
 		var entries = toc2indexEntries(module.toc, module.title, isClass);
@@ -151,8 +146,24 @@ getModules(function (modules) {
 			db.run("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES (?, ?, ?)", 
 				entry.name, entry.type, module.title + ".html#" + entry.anchor);
 		});
+
+		// Add TOC anchors to the module HTML
+		entries.forEach(function (entry) {
+			module.html = module.html.replace(
+				"<a name=\"" + entry.anchor, 
+				"<a name=\"//apple_ref/cpp/" + entry.type + "/" + encodeURIComponent(entry.name.replace(/^\w+\./, "")) + "\" class=\"dashAnchor\"></a>" +
+				"<a name=\"" + entry.anchor);
+		});
+
+		// Write the documentation file
+		fsExtra.outputFileSync(
+			DOCSET_DIR + "/Contents/Resources/Documents/" + module.title + ".html", 
+			renderModule({module: module}));
+
 		allEntries = allEntries.concat(entries);
 	});
+
+	db.close();
 
 	// Generate index.html
 	fsExtra.outputFileSync(
@@ -180,8 +191,6 @@ getModules(function (modules) {
 		.pipe(tar.Pack({noProprietary: true}))
 		.pipe(zlib.createGzip())
 		.pipe(fs.createWriteStream(FEED_DIR + "/" + config.name + ".tgz"));
-
-	db.close();
 
 	// Collect external links
 	async.map(modules, function (module, cb) {
