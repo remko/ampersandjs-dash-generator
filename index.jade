@@ -1,4 +1,27 @@
 doctype
 html
-head
-body
+	head
+		title #{title} reference
+		link(rel="stylesheet", type="text/css", href="style.css")
+
+	body
+		span.logo.logo-ampersand #{title} reference
+
+		h2 Modules
+		ul
+			for entry in entries.Module
+				li 
+					a(href="#{entry.module}.html") #{entry.name}
+
+		h2 Classes
+		ul
+			for entry in entries.Class
+				li 
+					a(href="#{entry.module}.html##{entry.anchor}") #{entry.name}
+
+
+		h2 Methods
+		ul
+			for entry in entries.Method
+				li 
+					a(href="#{entry.module}.html##{entry.anchor}") #{entry.name}

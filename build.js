@@ -28,10 +28,10 @@ function capitalize(string) {
 
 function toc2indexEntries(toc, module, isClass) {
 	var indexEntries = [];
-	indexEntries.push({name: module, type: "Module", anchor: ""});
+	indexEntries.push({name: module, type: "Module", anchor: "", module: module});
 	if (isClass) {
 		var className = capitalize(toCamelCase(module));
-		indexEntries.push({name: className, type: "Class", anchor: ""});
+		indexEntries.push({name: className, type: "Class", anchor: "", module: module});
 
 		toc.forEach(function (entry) {
 			if (entry.depth === 3) {
@@ -50,7 +50,7 @@ function toc2indexEntries(toc, module, isClass) {
 					type = "Method";
 					name = className + "." + name;
 				}
-				indexEntries.push({name: name, type: type, anchor: entry.linkText});
+				indexEntries.push({name: name, type: type, anchor: entry.linkText, module: module});
 			}
 		});
 	}
@@ -69,7 +69,7 @@ function getModules(cb) {
 }
 
 var renderModule = jade.compileFile(__dirname + "/module.jade", { pretty: true });
-
+var renderIndex = jade.compileFile(__dirname + "/index.jade", { pretty: true });
 ////////////////////////////////////////////////////////////////////////////////
 
 fsExtra.removeSync(DOCSET_DIR);
@@ -95,6 +95,7 @@ db.run("CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, p
 
 // Process modules
 getModules(function (modules) {
+	var allEntries = [];
 	modules.forEach(function (module) {
 		// Fix links in the html. 
 		// Not the most elegant or efficient solution, but who cares?
@@ -118,12 +119,13 @@ getModules(function (modules) {
 			db.run("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES (?, ?, ?)", 
 				entry.name, entry.type, module.title + ".html#" + entry.anchor);
 		});
+		allEntries = allEntries.concat(entries);
 	});
 
 	// Generate index.html
 	fsExtra.outputFileSync(
 		DOCSET_DIR + "/Contents/Resources/Documents/index.html",
-		jade.compileFile(__dirname + "/index.jade", { pretty: true })());
+		renderIndex({title: config.name, entries: _.groupBy(allEntries, 'type')}));
 
 	// Tar everything up into a tarball
 	fstream.Reader({ path: DOCSET_DIR, type: "Directory"})
