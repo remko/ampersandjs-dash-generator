@@ -21,4 +21,4 @@ To build the docset, run
 Use the resulting docset by adding the `.docset` to the *Docsets* tab of Dash.
 
 The build command also generates a Dash feed in `feed`. The `.html` file in the `feed` dir contains the Dash URL,
-which will install the docset when it is clicked.
+which will install the docset when it is opened.

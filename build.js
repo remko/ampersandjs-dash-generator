@@ -18,9 +18,6 @@ var toCamelCase = require("to-camel-case");
 var jsdom = require("jsdom");
 var strftime = require("strftime");
 
-var DOCSET_DIR = __dirname + "/" + config.name + ".docset";
-var FEED_DIR = __dirname + "/feed";
-
 ////////////////////////////////////////////////////////////////////////////////
 // Helpers
 ////////////////////////////////////////////////////////////////////////////////
@@ -72,15 +69,15 @@ function toc2indexEntries(toc, module, isClass) {
 function getModules(cb) {
 	var modules = {};
 	async.map(config.modules.concat(config.classModules), function (module, cb) {
-		moduleDetails(module, { sectionsToRemove: config.sectionsToRemove }, cb);
-	},
-	function (err, modules) {
-		if (err) { throw err; }
-		cb(modules);
-	});
+			moduleDetails(module, { sectionsToRemove: config.sectionsToRemove }, cb);
+		},
+		function (err, modules) {
+			if (err) { throw err; }
+			cb(modules);
+		});
 }
 
-// Extract all links a piece of HTML
+// Extract all links from a piece of HTML
 function getLinks(html, cb) {
 	jsdom.env({html: html, done: function (errors, window) {
 		if (errors) { return cb(errors); }
@@ -97,7 +94,12 @@ var renderModule = jade.compileFile(__dirname + "/module.jade", { pretty: true }
 var renderIndex = jade.compileFile(__dirname + "/index.jade", { pretty: true });
 var renderFeed = jade.compileFile(__dirname + "/feed.jade", { pretty: true });
 
+
 ////////////////////////////////////////////////////////////////////////////////
+
+
+var DOCSET_DIR = __dirname + "/" + config.name + ".docset";
+var FEED_DIR = __dirname + "/feed";
 
 fsExtra.removeSync(DOCSET_DIR);
 fsExtra.removeSync(FEED_DIR);
@@ -177,8 +179,7 @@ getModules(function (modules) {
 		mustache.render(fs.readFileSync("feed.xml.mustache", "utf-8"), {
 			version: "latest/" + strftime("%F-%H:%M:%S", new Date()),
 			url: config.feedBaseURL + "/" + config.name + ".tgz"
-		})
-	);
+		}));
 	fsExtra.outputFileSync(
 		FEED_DIR + "/" + config.name + ".html",
 		renderFeed({
@@ -194,31 +195,31 @@ getModules(function (modules) {
 
 	// Collect external links
 	async.map(modules, function (module, cb) {
-		getLinks(module.html, cb);
-	}, 
-	function (err, results) {
-		var externalLinks = _.chain(_.uniq(_.flatten(results)))
-			.map(function (link) { return link.toLowerCase(); })
-			.filter(function (link) { return link.indexOf("file:") !== 0; })
-			.reject(function (link) { return link.match(/^http:\/\/ampersandjs.com\/learn/); })
-			.reject(function (link) { return link.match(/^http:\/\/underscorejs.org\//); })
-			.reject(function (link) { return link.match(/^http:\/\/backbonejs.org\//); })
-			.reject(function (link) { return link.match(/^https:\/\/developer.mozilla.org\//); })
-			.reject(function (link) { return link.match(/^http:\/\/twitter.com\//); })
-			.difference([
-				"https://github.com/henrikjoreteg/key-tree-store",
-				"https://www.npmjs.org/package/backbone-events-standalone",
-				"http://github.com/raynos/xhr",
-				"https://github.com/raynos/xhr",
-				"https://github.com/substack/tape",
-				"https://github.com/juliangruber/tape-run"
-			])
-			.value();
-		if (externalLinks.length > 0) {
-			console.warn("Warning: External links found:");
-			externalLinks.forEach(function (link) {
-				console.log("- " + link);
-			});
-		}
-	});
+			getLinks(module.html, cb);
+		}, 
+		function (err, results) {
+			var externalLinks = _.chain(_.uniq(_.flatten(results)))
+				.map(function (link) { return link.toLowerCase(); })
+				.filter(function (link) { return link.indexOf("file:") !== 0; })
+				.reject(function (link) { return link.match(/^http:\/\/ampersandjs.com\/learn/); })
+				.reject(function (link) { return link.match(/^http:\/\/underscorejs.org\//); })
+				.reject(function (link) { return link.match(/^http:\/\/backbonejs.org\//); })
+				.reject(function (link) { return link.match(/^https:\/\/developer.mozilla.org\//); })
+				.reject(function (link) { return link.match(/^http:\/\/twitter.com\//); })
+				.difference([
+					"https://github.com/henrikjoreteg/key-tree-store",
+					"https://www.npmjs.org/package/backbone-events-standalone",
+					"http://github.com/raynos/xhr",
+					"https://github.com/raynos/xhr",
+					"https://github.com/substack/tape",
+					"https://github.com/juliangruber/tape-run"
+				])
+				.value();
+			if (externalLinks.length > 0) {
+				console.warn("Warning: External links found:");
+				externalLinks.forEach(function (link) {
+					console.log("- " + link);
+				});
+			}
+		});
 });
