@@ -16,8 +16,10 @@ var fstream = require("fstream");
 var zlib = require("zlib");
 var toCamelCase = require("to-camel-case");
 var jsdom = require("jsdom");
+var strftime = require("strftime");
 
 var DOCSET_DIR = __dirname + "/" + config.name + ".docset";
+var FEED_DIR = __dirname + "/feed";
 
 ////////////////////////////////////////////////////////////////////////////////
 // Helpers
@@ -86,9 +88,12 @@ function getLinks(html, cb) {
 
 var renderModule = jade.compileFile(__dirname + "/module.jade", { pretty: true });
 var renderIndex = jade.compileFile(__dirname + "/index.jade", { pretty: true });
+var renderFeed = jade.compileFile(__dirname + "/feed.jade", { pretty: true });
+
 ////////////////////////////////////////////////////////////////////////////////
 
 fsExtra.removeSync(DOCSET_DIR);
+fsExtra.removeSync(FEED_DIR);
 
 // Copy icon
 fsExtra.copySync("icon.png", DOCSET_DIR + "/icon.png");
@@ -102,7 +107,6 @@ fsExtra.outputFileSync(
 		name: config.name,
 		family: config.id
 	}));
-
 
 // Create the database
 fsExtra.ensureDirSync(DOCSET_DIR + "/Contents/Resources");
@@ -148,11 +152,24 @@ getModules(function (modules) {
 		DOCSET_DIR + "/Contents/Resources/Documents/index.html",
 		renderIndex({title: config.name, entries: _.groupBy(allEntries, 'type')}));
 
+	// Render the feed
+	var feed = FEED_DIR + "/" + config.name + ".xml";
+	fsExtra.outputFileSync(
+		feed,
+		mustache.render(fs.readFileSync("feed.xml.mustache", "utf-8"), {
+			version: "latest/" + strftime("%F-%H:%M:%S", new Date()),
+			url: config.feedBaseURL + "/" + config.name + ".tgz"
+		})
+	);
+	fsExtra.outputFileSync(
+		FEED_DIR + "/" + config.name + ".html",
+		renderFeed({feed: "dash-feed://" + encodeURIComponent(config.feedBaseURL + "/" + config.name + ".xml")}));
+
 	// Tar everything up into a tarball
 	fstream.Reader({ path: DOCSET_DIR, type: "Directory"})
 		.pipe(tar.Pack({noProprietary: true}))
 		.pipe(zlib.createGzip())
-		.pipe(fs.createWriteStream(config.name + ".tgz"));
+		.pipe(fs.createWriteStream(FEED_DIR + "/" + config.name + ".tgz"));
 
 	db.close();
 

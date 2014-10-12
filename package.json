@@ -23,6 +23,7 @@
     "module-details": "^2.0.1",
     "mustache": "^0.8.2",
     "sqlite3": "^3.0.2",
+    "strftime": "^0.8.2",
     "tar": "^1.0.1",
     "to-camel-case": "^0.2.1",
     "underscore": "^1.7.0"
@@ -56,8 +57,9 @@
       "changelog",
       "installing",
       "install",
-			"important note on the 1.0.x versions",
-			"running the tests"
-    ]
+      "important note on the 1.0.x versions",
+      "running the tests"
+    ],
+    "feedBaseURL": "http://cdn.el-tramo.be/dash"
   }
 }
