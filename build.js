@@ -142,11 +142,11 @@ getModules(function (modules) {
 		});
 		
 		// Insert entries into the index
-		var isClass = _.contains(config.classModules, module.title);
-		var entries = toc2indexEntries(module.toc, module.title, isClass);
+		var isClass = _.contains(config.classModules, module.name);
+		var entries = toc2indexEntries(module.toc, module.name, isClass);
 		entries.forEach(function (entry) {
 			db.run("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES (?, ?, ?)", 
-				entry.name, entry.type, module.title + ".html#" + entry.anchor);
+				entry.name, entry.type, module.name + ".html#" + entry.anchor);
 		});
 
 		// Add TOC anchors to the module HTML
@@ -159,7 +159,7 @@ getModules(function (modules) {
 
 		// Write the documentation file
 		fsExtra.outputFileSync(
-			DOCSET_DIR + "/Contents/Resources/Documents/" + module.title + ".html", 
+			DOCSET_DIR + "/Contents/Resources/Documents/" + module.name + ".html", 
 			renderModule({module: module}));
 
 		allEntries = allEntries.concat(entries);
