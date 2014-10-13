@@ -45,7 +45,8 @@
       "ampersand-input-view",
       "ampersand-checkbox-view",
       "ampersand-array-input-view",
-      "ampersand-select-view"
+      "ampersand-select-view",
+      "ampersand-collection-view"
     ],
     "modules": [
       "ampersand-dom-bindings"
