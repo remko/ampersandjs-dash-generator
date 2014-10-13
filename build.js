@@ -177,7 +177,7 @@ getModules(function (modules) {
 	fsExtra.outputFileSync(
 		feed,
 		mustache.render(fs.readFileSync("feed.xml.mustache", "utf-8"), {
-			version: "latest/" + strftime("%F-%H:%M:%S", new Date()),
+			version: "/" + strftime("%F-%H:%M:%S", new Date()),
 			url: config.feedBaseURL + "/" + config.name + ".tgz"
 		}));
 	fsExtra.outputFileSync(
