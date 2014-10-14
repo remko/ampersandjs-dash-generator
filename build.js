@@ -174,10 +174,11 @@ getModules(function (modules) {
 
 	// Render the feed
 	var feed = FEED_DIR + "/" + config.name + ".xml";
+	var timestamp = new Date();
 	fsExtra.outputFileSync(
 		feed,
 		mustache.render(fs.readFileSync("feed.xml.mustache", "utf-8"), {
-			version: "/" + strftime("%F-%H:%M:%S", new Date()),
+			version: strftime("%F", timestamp) + "/" + strftime("%F_%H:%M:%S", timestamp),
 			url: config.feedBaseURL + "/" + config.name + ".tgz"
 		}));
 	fsExtra.outputFileSync(
