@@ -4,6 +4,8 @@ Generates a [Dash](http://kapeli.com/dash) docset of all [Ampersand.js](http://a
 
 If you are just interested in installing the docset (and not in building it yourself), just
 [click here to install the docset](http://cdn.el-tramo.be/dash/Ampersand.js.html).
+This docset is bundled as a user contribution with Dash, which is updated regularly, 
+but the link above will always get you the latest version.
 
 ## Installation
 
