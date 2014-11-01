@@ -3,13 +3,14 @@
   "version": "0.0.1",
   "description": "Generate a Dash docset for Ampersand.js",
   "scripts": {
+    "start": "npm run build",
     "build": "node build.js"
   },
   "keywords": [
     "dash"
   ],
   "author": "Remko Tronçon",
-	"homepage": "http://el-tramo.be/ampersandjs-dash-generator",
+  "homepage": "http://el-tramo.be/ampersandjs-dash-generator",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -33,22 +34,28 @@
     "name": "Ampersand.js",
     "id": "ampersandjs",
     "classModules": [
-      "ampersand-state",
-      "ampersand-model",
+      "ampersand-array-input-view",
+      "ampersand-checkbox-view",
       "ampersand-collection",
-      "ampersand-rest-collection",
-      "ampersand-sync",
-      "ampersand-view",
-      "ampersand-view-switcher",
-      "ampersand-router",
+      "ampersand-collection-view",
       "ampersand-form-view",
       "ampersand-input-view",
-      "ampersand-checkbox-view",
-      "ampersand-array-input-view",
+      "ampersand-model",
+      "ampersand-registry",
+      "ampersand-rest-collection",
+      "ampersand-router",
       "ampersand-select-view",
-      "ampersand-collection-view"
+      "ampersand-state",
+      "ampersand-sync",
+      "ampersand-subcollection",
+      "ampersand-view",
+      "ampersand-view-switcher"
     ],
     "modules": [
+      "ampersand-class-extend",
+      "ampersand-collection-rest-mixin",
+      "ampersand-collection-underscore-mixin",
+      "ampersand-dom",
       "ampersand-dom-bindings"
     ],
     "sectionsToRemove": [
