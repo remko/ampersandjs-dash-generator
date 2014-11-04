@@ -3,7 +3,8 @@
 "use strict";
 
 var moduleDetails = require('module-details');
-var config = require("./package.json").config;
+var packageInfo = require("./package.json");
+var config = packageInfo.config;
 var async = require("async");
 var _ = require("underscore");
 var fsExtra = require("fs-extra");
@@ -100,12 +101,17 @@ var renderFeed = jade.compileFile(__dirname + "/feed.jade", { pretty: true });
 
 var DOCSET_DIR = __dirname + "/" + config.name + ".docset";
 var FEED_DIR = __dirname + "/feed";
+var USER_CONTRIBUTION_DIR = __dirname + "/user-contribution";
+
+var timestamp = new Date();
+var docsetVersion = strftime("%F", timestamp) + "/" + strftime("%F_%H:%M:%S", timestamp);
 
 fsExtra.removeSync(DOCSET_DIR);
 fsExtra.removeSync(FEED_DIR);
+fsExtra.removeSync(USER_CONTRIBUTION_DIR);
 
 // Copy icon
-fsExtra.copySync("icon.png", DOCSET_DIR + "/icon.png");
+fsExtra.copySync("icon@2x.png", DOCSET_DIR + "/icon.png");
 fsExtra.copySync("style.css", DOCSET_DIR + "/Contents/Resources/Documents/style.css");
 
 // Generate Info.plist
@@ -174,11 +180,10 @@ getModules(function (modules) {
 
 	// Render the feed
 	var feed = FEED_DIR + "/" + config.name + ".xml";
-	var timestamp = new Date();
 	fsExtra.outputFileSync(
 		feed,
 		mustache.render(fs.readFileSync("feed.xml.mustache", "utf-8"), {
-			version: strftime("%F", timestamp) + "/" + strftime("%F_%H:%M:%S", timestamp),
+			version: docsetVersion,
 			url: config.feedBaseURL + "/" + config.name + ".tgz"
 		}));
 	fsExtra.outputFileSync(
@@ -193,6 +198,22 @@ getModules(function (modules) {
 		.pipe(tar.Pack({noProprietary: true}))
 		.pipe(zlib.createGzip())
 		.pipe(fs.createWriteStream(FEED_DIR + "/" + config.name + ".tgz"));
+
+	// Generate a Dash user contribution dir
+	fsExtra.outputFileSync(
+		USER_CONTRIBUTION_DIR + "/docset.json",
+		mustache.render(fs.readFileSync("docset.json.mustache", "utf-8"), {
+			name: config.name,
+			author: packageInfo.author.name,
+			authorLink: packageInfo.author.url,
+			version: docsetVersion
+		}));
+	fsExtra.copySync("icon@2x.png", USER_CONTRIBUTION_DIR + "/icon@2x.png");
+	fsExtra.copySync("icon.png", USER_CONTRIBUTION_DIR + "/icon.png");
+	fstream.Reader({ path: DOCSET_DIR, type: "Directory"})
+		.pipe(tar.Pack({noProprietary: true}))
+		.pipe(zlib.createGzip())
+		.pipe(fs.createWriteStream(USER_CONTRIBUTION_DIR + "/" + config.name + ".tgz"));
 
 	// Collect external links
 	async.map(modules, function (module, cb) {

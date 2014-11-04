@@ -9,7 +9,10 @@
   "keywords": [
     "dash"
   ],
-  "author": "Remko Tronçon",
+  "author": {
+    "name": "Remko Tronçon",
+    "url": "http://el-tramo.be"
+  },
   "homepage": "http://el-tramo.be/ampersandjs-dash-generator",
   "license": "MIT",
   "repository": {
