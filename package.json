@@ -11,9 +11,9 @@
   ],
   "author": {
     "name": "Remko Tronçon",
-    "url": "http://el-tramo.be"
+    "url": "https://el-tramo.be"
   },
-  "homepage": "http://el-tramo.be/ampersandjs-dash-generator",
+  "homepage": "https://el-tramo.be/ampersandjs-dash-generator",
   "license": "MIT",
   "repository": {
     "type": "git",

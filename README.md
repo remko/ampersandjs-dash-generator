@@ -1,4 +1,4 @@
-# [ampersandjs-dash-generator: Generate a Dash docset for Ampersand.js](http://el-tramo.be/ampersandjs-dash-generator)
+# [ampersandjs-dash-generator: Generate a Dash docset for Ampersand.js](https://el-tramo.be/ampersandjs-dash-generator)
 
 Generates a [Dash](http://kapeli.com/dash) docset of all [Ampersand.js](http://ampersandjs.com) modules.
 
