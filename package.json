@@ -64,6 +64,9 @@
       "ampersand-dom",
       "ampersand-dom-bindings"
     ],
+    "guidesToRemove": [
+      "bug-triage-process"
+    ],
     "sectionsToRemove": [
       "credits",
       "license",

@@ -24,7 +24,11 @@ function getGuides(cb) {
 		_.extend({}, learnRepo, { path: "/learn_markdown"}),
 		function (err, entries) {
 			if (err) { throw err; }
-			entries = entries.filter(function (e) { return S(e.name).endsWith(".md"); });
+			entries = entries
+				.filter(function (e) { return S(e.name).endsWith(".md"); })
+				.filter(function (e) { return !_.any(packageInfo.config.guidesToRemove, function (guideToRemove) {
+					return e.name === guideToRemove + ".md";
+				}); });
 			async.map(entries, function (entry, cb) {
 				github.repos.getContent(
 					_.extend({}, learnRepo, { path: entry.path }), 
