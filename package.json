@@ -29,6 +29,7 @@
     "mustache": "^0.8.2",
     "sqlite3": "^3.0.2",
     "strftime": "^0.8.2",
+    "string": "^3.0.0",
     "tar": "^1.0.1",
     "to-camel-case": "^0.2.1",
     "underscore": "^1.7.0"

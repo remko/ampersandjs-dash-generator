@@ -18,6 +18,7 @@ var zlib = require("zlib");
 var toCamelCase = require("to-camel-case");
 var jsdom = require("jsdom");
 var strftime = require("strftime");
+var S = require("string");
 
 ////////////////////////////////////////////////////////////////////////////////
 // Helpers
@@ -69,7 +70,8 @@ function toc2indexEntries(toc, module, isClass) {
 // Fetch module information from NPM
 function getModules(cb) {
 	var modules = {};
-	async.map(config.modules.concat(config.classModules), function (module, cb) {
+	var moduleNames = config.modules.concat(config.classModules);
+	async.map(moduleNames, function (module, cb) {
 			moduleDetails(module, { sectionsToRemove: config.sectionsToRemove }, cb);
 		},
 		function (err, modules) {
@@ -136,15 +138,19 @@ getModules(function (modules) {
 		// Not the most elegant or efficient solution. Clean this up.
 		var otherModules = _.sortBy(_.pluck(modules, 'title'), function (name) { return -name.length; });
 		otherModules.forEach(function (otherModule) {
-			module.html = module.html
-				.replace("href=\"#" + otherModule + "\"", "href=\"" + otherModule + ".html\"")
-				.replace("href=\"http://ampersandjs.com/docs/#" + otherModule + "\"", "href=\"" + otherModule + ".html\"")
-				.replace("href=\"http://ampersandjs.com/docs/#" + otherModule + "-", "href=\"" + otherModule + ".html#" + otherModule + "-")
-				.replace("href=\"http://ampersandjs.com/docs#" + otherModule + "\"", "href=\"" + otherModule + ".html\"")
-				.replace("href=\"http://ampersandjs.com/docs#" + otherModule + "-", "href=\"" + otherModule + ".html#" + otherModule + "-")
-				.replace("href=\"http://github.com/ampersandjs/" + otherModule + "\"", "href=\"" + otherModule + ".html\"")
-				.replace("href=\"https://github.com/ampersandjs/" + otherModule + "\"", "href=\"" + otherModule + ".html\"")
-				.replace("href=\"https://github.com/AmpersandJS/" + otherModule + "\"", "href=\"" + otherModule + ".html\"");
+			var replacements = [
+				["href=\"#" + otherModule + "\"", "href=\"" + otherModule + ".html\""],
+				["href=\"http://ampersandjs.com/docs/#" + otherModule + "\"", "href=\"" + otherModule + ".html\""],
+				["href=\"http://ampersandjs.com/docs/#" + otherModule + "-", "href=\"" + otherModule + ".html#" + otherModule + "-"],
+				["href=\"http://ampersandjs.com/docs#" + otherModule + "\"", "href=\"" + otherModule + ".html\""],
+				["href=\"http://ampersandjs.com/docs#" + otherModule + "-", "href=\"" + otherModule + ".html#" + otherModule + "-"],
+				["href=\"http://github.com/ampersandjs/" + otherModule + "\"", "href=\"" + otherModule + ".html\""],
+				["href=\"https://github.com/ampersandjs/" + otherModule + "\"", "href=\"" + otherModule + ".html\""],
+				["href=\"https://github.com/AmpersandJS/" + otherModule + "\"", "href=\"" + otherModule + ".html\""]
+			];
+			_.each(replacements, function (replacement) {
+				module.html = S(module.html).replaceAll(replacement[0], replacement[1]);
+			});
 		});
 		
 		// Insert entries into the index
