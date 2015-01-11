@@ -42,15 +42,27 @@ function toc2indexEntries(toc, module, isClass) {
 			if (entry.depth === 3) {
 				var name = entry.text
 					.replace(/\s+<code>.*/, "")
-					.replace(/\/.*/, "");
+					.replace(/\/.*/, "")
+					.replace(/^\w+\.extend/, ".extend"); // Subcollection-style
 
 				var type;
 				if (name.match(/proxied ES5|underscore methods/)) {
 					return;
 				}
-				else if (name.match(/^constructor/)) {
+				else if (name.match(/^constructor/) || name.match(/^new /)) {
 					type = "Constructor";
 					name = className;
+				}
+				else if (name.match(/^\./)) {
+					// ampersand-subcollection style
+					if (name.match(/\(/)) {
+						type = "Method";
+						name = className + name.replace(/\(.*/, "");
+					}
+					else {
+						type = "Property";
+						name = className + name;
+					}
 				}
 				else if (entry.text.match(/extend\(/) && name !== "extend" 
 						|| !entry.text.match(/<code>.*\(/) 
