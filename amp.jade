@@ -1,0 +1,26 @@
+doctype
+html
+	head
+		title= Amp
+		link(rel="stylesheet", type="text/css", href="style.css")
+		meta(charset="utf-8")
+
+	body
+		h1 Amp
+
+		for module in modules
+			!=module.dashAnchor
+			a.anchor(name=module.name, href="#" + module.name)
+			h2 #{module.name}
+				| 
+				a.source(href="https://github.com/AmpersandJS/amp/blob/master/modules/#{module.bareName}/#{module.bareName}.js") [source]
+			div!= module.docHtml
+
+			// .code
+				button.toggle Show the code
+				pre(style='display: none')
+					code.lang-javascript.hljs= module.code
+
+			h3 Example
+			pre
+				code= module.exampleCode

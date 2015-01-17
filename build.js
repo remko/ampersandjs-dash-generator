@@ -19,8 +19,9 @@ var jsdom = require("jsdom");
 var strftime = require("strftime");
 var S = require("string");
 
-var ampersandModules = require("./ampersand-modules.js");
+var ampersandModules = require("./ampersand-modules");
 var ampersandGuides = require("./ampersand-guides");
+var amp = require("./amp");
 
 ////////////////////////////////////////////////////////////////////////////////
 // Helpers
@@ -121,10 +122,15 @@ fsExtra.ensureDirSync(DOCSET_DIR + "/Contents/Resources");
 var db = new sqlite3.Database(DOCSET_DIR + "/Contents/Resources/docSet.dsidx");
 db.run("CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT)");
 
-async.series([
-		ampersandGuides.getDocumentation,
-		ampersandModules.getDocumentation
-], function (err, results) {
+
+var getDocumentationTasks = [
+	ampersandGuides.getDocumentation,
+	ampersandModules.getDocumentation,
+	amp.getDocumentation
+];
+// getDocumentationTasks = [ require('./dummy').getDocumentation, require('./dummy').getDocumentation, amp.getDocumentation ];
+
+async.series(getDocumentationTasks, function (err, results) {
 	if (err) { throw err; }
 	var allEntries = _.flatten(_.pluck(results, 'entries'));
 	var allPages = _.flatten(_.pluck(results, 'pages'));

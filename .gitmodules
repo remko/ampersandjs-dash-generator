@@ -1,0 +1,3 @@
+[submodule "vendor/amp"]
+	path = vendor/amp
+	url = https://github.com/AmpersandJS/amp.git

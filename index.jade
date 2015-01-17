@@ -14,27 +14,31 @@ html
 					li 
 						a(href="#{entry.module}.html") #{entry.name}
 
-		h2 Modules
-		ul
-			for entry in entries.Module
-				li 
-					a(href="#{entry.module}.html") #{entry.name}
+		if entries.Module
+			h2 Modules
+			ul
+				for entry in entries.Module
+					li 
+						a(href="#{entry.module}.html") #{entry.name}
 
-		h2 Classes
-		ul
-			for entry in entries.Class
-				li 
-					a(href="#{entry.module}.html##{entry.anchor}") #{entry.name}
+		if entries.Class
+			h2 Classes
+			ul
+				for entry in entries.Class
+					li 
+						a(href="#{entry.module}.html##{entry.anchor}") #{entry.name}
 
 
-		h2 Methods
-		ul
-			for entry in entries.Method
-				li 
-					a(href="#{entry.module}.html##{entry.anchor}") #{entry.name}
+		if entries.Method
+			h2 Methods
+			ul
+				for entry in entries.Method
+					li 
+						a(href="#{entry.module}.html##{entry.anchor}") #{entry.name}
 
-		h2 Properties
-		ul
-			for entry in entries.Property
-				li 
-					a(href="#{entry.module}.html##{entry.anchor}") #{entry.name}
+		if entries.Property
+			h2 Properties
+			ul
+				for entry in entries.Property
+					li 
+						a(href="#{entry.module}.html##{entry.anchor}") #{entry.name}

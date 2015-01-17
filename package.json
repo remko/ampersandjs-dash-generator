@@ -26,6 +26,7 @@
     "github": "^0.2.3",
     "jade": "^1.7.0",
     "jsdom": "^1.0.1",
+    "marked": "^0.3.2",
     "meta-marked": "^0.3.3",
     "module-details": "^2.0.1",
     "mustache": "^0.8.2",
