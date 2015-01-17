@@ -11,6 +11,7 @@ but the link above will always get you the latest version.
 
 To install the prerequisites, run
 
+		git submodule update --init
 		npm install
 
 
