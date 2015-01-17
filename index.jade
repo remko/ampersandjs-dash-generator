@@ -42,3 +42,10 @@ html
 				for entry in entries.Property
 					li 
 						a(href="#{entry.module}.html##{entry.anchor}") #{entry.name}
+
+		if entries.Function
+			h2 Functions
+			ul
+				for entry in entries.Function
+					li 
+						a(href="#{entry.module}.html##{entry.anchor}") #{entry.name}
