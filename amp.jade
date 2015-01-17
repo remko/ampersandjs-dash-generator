@@ -12,15 +12,35 @@ html
 			!=module.dashAnchor
 			a.anchor(name=module.name, href="#" + module.name)
 			h2 #{module.name}
-				| 
-				a.source(href="https://github.com/AmpersandJS/amp/blob/master/modules/#{module.bareName}/#{module.bareName}.js") [source]
-			div!= module.docHtml
 
-			// .code
-				button.toggle Show the code
-				pre(style='display: none')
-					code.lang-javascript.hljs= module.code
+			div!= module.docHtml
 
 			h3 Example
 			pre
 				code= module.exampleCode
+
+			.code
+				button.toggle Show the code
+				pre(style='display: none')
+					code.lang-javascript.hljs= module.code
+
+			.tests
+				button.toggle Show the tests
+				pre(style='display: none')
+					code.lang-javascript.hljs= module.test 
+
+		script(type='text/javascript').
+			document.addEventListener('click', function (e) {
+				var target = e.target;
+				if (target.className === 'toggle') {
+						var next = target.nextElementSibling;
+						if (next.style.display === 'none') {
+								next.style.display = '';
+								target.textContent = target.textContent.replace('Show', 'Collapse');
+						} else {
+								next.style.display = 'none';
+								target.textContent = target.textContent.replace('Collapse', 'Show');
+						}
+				}
+			});
+
