@@ -7,11 +7,12 @@ html
 	body
 		span.logo.logo-ampersand #{title} reference
 
-		h2 Guides
-		ul
-			for entry in entries.Guide
-				li 
-					a(href="#{entry.module}.html") #{entry.name}
+		if entries.Guide
+			h2 Guides
+			ul
+				for entry in entries.Guide
+					li 
+						a(href="#{entry.module}.html") #{entry.name}
 
 		h2 Modules
 		ul

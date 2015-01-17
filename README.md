@@ -20,6 +20,8 @@ To build the docset, run
 
 		npm run build
 
+This will create a `build` directory with all build results.
+
 Use the resulting docset by adding the `.docset` to the *Docsets* tab of Dash.
 
 The build command also generates a Dash feed in `feed`. The `.html` file in the `feed` dir contains the Dash URL,

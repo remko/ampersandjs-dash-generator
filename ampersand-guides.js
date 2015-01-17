@@ -1,3 +1,5 @@
+/* global __dirname */
+
 "use strict";
 
 var GitHubApi = require("github");
@@ -6,6 +8,10 @@ var async = require("async");
 var _ = require("underscore");
 var S = require("string");
 var metaMarked = require("meta-marked");
+var jade = require("jade");
+var createAnchor = require("./entries").createAnchor;
+
+var renderGuide = jade.compileFile(__dirname + "/guide.jade", { pretty: true });
 
 function getGuides(cb) {
 	var github = new GitHubApi({
@@ -60,6 +66,19 @@ function getGuides(cb) {
 	});
 }
 
+function getDocumentation(cb) {
+	getGuides(function (err, guides) {
+		var allEntries = [];
+		guides.forEach(function (guide) {
+			var entry = {name: guide.title, module: guide.name, type: "Guide", anchor: ""};
+			guide.html = createAnchor(entry) + guide.html;
+			guide.html = renderGuide({guide: guide});
+			allEntries.push(entry);
+		});
+		cb(null, { pages: guides, entries: allEntries});
+	});
+}
+
 module.exports = {
-	getGuides: getGuides
+	getDocumentation: getDocumentation
 };

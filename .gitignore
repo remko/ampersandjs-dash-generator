@@ -1,5 +1,3 @@
 /node_modules
-/*.docset
-/feed
-/user-contribution
+/build
 .DS_Store
