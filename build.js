@@ -193,30 +193,15 @@ async.series([
 			getLinks(module.html, cb);
 		}, 
 		function (err, results) {
-			var externalLinks = _.chain(_.uniq(_.flatten(results)))
+			var externalLinks = _.uniq(_.flatten(results))
 				.map(function (link) { return link.toLowerCase(); })
-				.filter(function (link) { return link.indexOf("file:") !== 0; })
-				.filter(function (link) { return link.indexOf("mailto:") !== 0; })
-				.reject(function (link) { return link.match(/^https?:\/\/(www.)?npmjs.org/); })
-				.reject(function (link) { return link.match(/^http:\/\/underscorejs.org\//); })
-				.reject(function (link) { return link.match(/^http:\/\/backbonejs.org\//); })
-				.reject(function (link) { return link.match(/^https?:\/\/gitter.im\//); })
-				.reject(function (link) { return link.match(/^https?:\/\/trello.com\//); })
-				.reject(function (link) { return link.match(/^http:\/\/andyet.com\//); })
-				.reject(function (link) { return link.match(/^http:\/\/handlebarsjs.com\//); })
-				.reject(function (link) { return link.match(/^https?:\/\/nodejs.org\//); })
-				.reject(function (link) { return link.match(/^https?:\/\/semver.org\//); })
-				.reject(function (link) { return link.match(/^https?:\/\/nodesecurity.io\//); })
-				.reject(function (link) { return link.match(/^https?:\/\/browserify.org\//); })
-				.reject(function (link) { return link.match(/^https?:\/\/gruntjs.com\//); })
-				.reject(function (link) { return link.match(/^https?:\/\/gulpjs.com\//); })
-				.reject(function (link) { return link.match(/^https?:\/\/jade-lang.com\//); })
-				.reject(function (link) { return link.match(/^https:\/\/developer.mozilla.org\//); })
-				.reject(function (link) { return link.match(/^https?:\/\/twitter.com\//); })
-				.reject(function (link) { return link.match(/^https?:\/\/github.com\/ampersandjs\/.*\.js$/); })
-				.reject(function (link) { return link.match(/^https?:\/\/github.com\/(jmreidy|deepak1556|chrisdickinson|raynos|substack|janl|latentflip|domenic|juliangruber|jashkenas|henrikjoreteg|gruntjs|ampersandjs\/ampersand\/issues|ampersandjs\/ampersand\/blob)/); })
-				.difference(["https://github.com/ampersandjs"])
-				.value();
+				.filter(function (link) {
+					if (link.match(/^https?:\/\/github.com\/ampersandjs/)) {
+						return !link.match(/\/ampersandjs\/.*\.js$/) &&
+							!link.match(/\/ampersandjs\/ampersand\/(blob|issues)/);
+					}
+					return false;
+				});
 			if (externalLinks.length > 0) {
 				console.warn("Warning: External links found:");
 				externalLinks.forEach(function (link) {
