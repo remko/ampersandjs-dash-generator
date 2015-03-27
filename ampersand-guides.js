@@ -1,4 +1,4 @@
-/* global __dirname */
+/* eslint no-path-concat:0, no-shadow: 0 */
 
 "use strict";
 
@@ -68,6 +68,7 @@ function getGuides(cb) {
 
 function getDocumentation(cb) {
 	getGuides(function (err, guides) {
+		if (err) { cb(err); return; }
 		var allEntries = [];
 		guides.forEach(function (guide) {
 			var entry = {name: guide.title, module: guide.name, type: "Guide", anchor: ""};

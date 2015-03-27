@@ -1,17 +1,16 @@
-/* global __dirname */
-
 "use strict";
 
 var _ = require("underscore");
 var jade = require("jade");
 var createAnchor = require("./entries").createAnchor;
 var getPackages = require("./vendor/amp/lib/get-packages");
+var path = require('path');
 
-var renderAmp = jade.compileFile(__dirname + "/amp.jade", { pretty: true });
+var renderAmp = jade.compileFile(path.join(__dirname, "amp.jade"), { pretty: true });
 
 module.exports = {
 	getDocumentation: function (cb) {
-		var modules = getPackages();
+		var modules = _.filter(getPackages(), p => !p.lodash);
 		var entries = [{ name: "amp", type: "Module", module: "amp", anchor: "" }];
 		_.each(modules, function (module) {
 			var entry = {

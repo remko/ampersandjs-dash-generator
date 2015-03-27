@@ -4,7 +4,7 @@
   "description": "Generate a Dash docset for Ampersand.js",
   "scripts": {
     "start": "npm run build",
-    "build": "node build.js"
+    "build": "babel-node build.js"
   },
   "keywords": [
     "dash"

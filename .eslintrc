@@ -1,0 +1,14 @@
+env:
+  node: true
+  es6: true
+rules:
+  no-trailing-spaces: 0
+  quotes: 0
+  no-unused-vars: 0
+  no-underscore-dangle: 0
+  space-infix-ops: 0
+  space-unary-ops: 0
+  new-cap: 0
+  no-empty: 0
+  no-console: 0
+  comma-spacing: 0

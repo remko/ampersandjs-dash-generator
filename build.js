@@ -1,4 +1,4 @@
-/* global __dirname */
+/* eslint no-path-concat:0, no-shadow: 0 */
 
 "use strict";
 
@@ -199,6 +199,7 @@ async.series(getDocumentationTasks, function (err, results) {
 			getLinks(module.html, cb);
 		}, 
 		function (err, results) {
+			if (err) { console.err(err); return; }
 			var externalLinks = _.uniq(_.flatten(results))
 				.map(function (link) { return link.toLowerCase(); })
 				.filter(function (link) {

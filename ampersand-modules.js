@@ -1,4 +1,4 @@
-/* global __dirname */
+/* eslint no-path-concat:0, no-shadow: 0 */
 
 "use strict";
 
@@ -104,6 +104,4 @@ function getDocumentation (cb) {
 	});
 }
 
-module.exports = {
-	getDocumentation : getDocumentation
-};
+module.exports = { getDocumentation };
