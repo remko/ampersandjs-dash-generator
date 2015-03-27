@@ -4,7 +4,8 @@
   "description": "Generate a Dash docset for Ampersand.js",
   "scripts": {
     "start": "npm run build",
-    "build": "babel-node build.js"
+    "build": "babel-node build.js",
+    "lint": "./node_modules/.bin/eslint ."
   },
   "keywords": [
     "dash"
@@ -79,5 +80,8 @@
       "running the tests"
     ],
     "feedBaseURL": "http://cdn.el-tramo.be/dash"
+  },
+  "devDependencies": {
+    "eslint": "^0.17.1"
   }
 }
