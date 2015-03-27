@@ -1,29 +1,29 @@
-"use strict";
+'use strict';
 
-var _ = require("underscore");
-var jade = require("jade");
-var createAnchor = require("./entries").createAnchor;
-var getPackages = require("./vendor/amp/lib/get-packages");
-var path = require('path');
+const _ = require('underscore');
+const jade = require('jade');
+const createAnchor = require('./entries').createAnchor;
+const getPackages = require('./vendor/amp/lib/get-packages');
+const path = require('path');
 
-var renderAmp = jade.compileFile(path.join(__dirname, "amp.jade"), { pretty: true });
+const renderAmp = jade.compileFile(path.join(__dirname, 'amp.jade'), { pretty: true });
 
 module.exports = {
-	getDocumentation: function (cb) {
-		var modules = _.filter(getPackages(), p => !p.lodash);
-		var entries = [{ name: "amp", type: "Module", module: "amp", anchor: "" }];
-		_.each(modules, function (module) {
-			var entry = {
+	getDocumentation (cb) {
+		const modules = _.filter(getPackages(), p => !p.lodash);
+		const entries = [{ name: 'amp', type: 'Module', module: 'amp', anchor: '' }];
+		_.each(modules, module => {
+			const entry = {
 				name: module.camelCaseName, 
-				type: "Function", 
-				module: "amp", 
+				type: 'Function', 
+				module: 'amp', 
 				anchor: module.name
 			};
-			entries.push(entry);
 			module.dashAnchor = createAnchor(entry);
+			entries.push(entry);
 		});
 
-		var html = renderAmp({modules: modules});
-		cb(null, { pages: [{ name: "amp", html: html}], entries: entries });
+		const html = renderAmp({modules});
+		cb(null, { pages: [{ name: 'amp', html}], entries });
 	}
 };

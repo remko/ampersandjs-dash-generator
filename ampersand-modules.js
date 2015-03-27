@@ -2,25 +2,20 @@
 
 "use strict";
 
-var moduleDetails = require('module-details');
-var async = require("async");
-var packageInfo = require("./package.json");
-var config = packageInfo.config;
-var _ = require("underscore");
-var jade = require("jade");
-var toCamelCase = require("to-camel-case");
-var createAnchor = require("./entries").createAnchor;
+const moduleDetails = require('module-details');
+const async = require("async");
+const packageInfo = require("./package.json");
+const config = packageInfo.config;
+const _ = require("underscore");
+const jade = require("jade");
+const createAnchor = require("./entries").createAnchor;
+const S = require("string");
 
-var renderModule = jade.compileFile(__dirname + "/module.jade", { pretty: true });
-
-function capitalize(string) {
-  return string.charAt(0).toUpperCase() + string.substring(1);
-}
+const renderModule = jade.compileFile(__dirname + "/module.jade", { pretty: true });
 
 // Fetch module information from NPM
 function getModules(cb) {
-	var modules = {};
-	var moduleNames = config.modules.concat(config.classModules);
+	const moduleNames = config.modules.concat(config.classModules);
 	async.map(moduleNames, function (module, cb) {
 			moduleDetails(module, { sectionsToRemove: config.sectionsToRemove }, cb);
 		},
@@ -30,22 +25,26 @@ function getModules(cb) {
 		});
 }
 
+function capitalize(string) {
+	return string.charAt(0).toUpperCase() + string.substring(1);
+}
+
 // Convert NPM TOC documentation to index entries
 function toc2indexEntries(toc, module, isClass) {
-	var indexEntries = [];
+	const indexEntries = [];
 	indexEntries.push({name: module, type: "Module", anchor: "", module: module});
 	if (isClass) {
-		var className = capitalize(toCamelCase(module));
+		const className = capitalize(S(module).camelize().s);
 		indexEntries.push({name: className, type: "Class", anchor: "", module: module});
 
 		toc.forEach(function (entry) {
 			if (entry.depth === 3) {
-				var name = entry.text
+				let name = entry.text
 					.replace(/\s+<code>.*/, "")
 					.replace(/\/.*/, "")
 					.replace(/^\w+\.extend/, ".extend"); // Subcollection-style
 
-				var type;
+				let type;
 				if (name.match(/proxied ES5|underscore methods/)) {
 					return;
 				}
@@ -83,11 +82,11 @@ function toc2indexEntries(toc, module, isClass) {
 
 function getDocumentation (cb) {
 	getModules(function (modules) {
-		var allEntries = [];
+		let allEntries = [];
 		modules.forEach(function (module) {
 			// Insert entries into the index
-			var isClass = _.contains(config.classModules, module.name);
-			var entries = toc2indexEntries(module.toc, module.name, isClass);
+			const isClass = _.contains(config.classModules, module.name);
+			const entries = toc2indexEntries(module.toc, module.name, isClass);
 
 			// Add TOC anchors to the module HTML
 			entries.forEach(function (entry) {

@@ -2,19 +2,19 @@
 
 "use strict";
 
-var GitHubApi = require("github");
-var packageInfo = require("./package.json");
-var async = require("async");
-var _ = require("underscore");
-var S = require("string");
-var metaMarked = require("meta-marked");
-var jade = require("jade");
-var createAnchor = require("./entries").createAnchor;
+const GitHubApi = require("github");
+const packageInfo = require("./package.json");
+const async = require("async");
+const _ = require("underscore");
+const S = require("string");
+const metaMarked = require("meta-marked");
+const jade = require("jade");
+const createAnchor = require("./entries").createAnchor;
 
-var renderGuide = jade.compileFile(__dirname + "/guide.jade", { pretty: true });
+const renderGuide = jade.compileFile(__dirname + "/guide.jade", { pretty: true });
 
 function getGuides(cb) {
-	var github = new GitHubApi({
+	const github = new GitHubApi({
 			version: "3.0.0",
 			headers: { "user-agent": packageInfo.name }
 	});
@@ -25,7 +25,7 @@ function getGuides(cb) {
 			password: process.env.GITHUB_PASS
 		});
 	}
-	var learnRepo = { user: "AmpersandJS", repo: "ampersandjs.com" };
+	const learnRepo = { user: "AmpersandJS", repo: "ampersandjs.com" };
 	github.repos.getContent(
 		_.extend({}, learnRepo, { path: "/learn_markdown"}),
 		function (err, entries) {
@@ -47,9 +47,9 @@ function getGuides(cb) {
 					});
 			}, function (err, results) {
 				if (err) { cb(err); return; }
-				var result = results
+				const result = results
 					.map(function (entry) {
-						var marked = metaMarked(entry.markdown);
+						const marked = metaMarked(entry.markdown);
 						return _.extend(entry, {
 							html: marked.html, 
 							title: marked.meta.pagetitle, 
@@ -69,9 +69,9 @@ function getGuides(cb) {
 function getDocumentation(cb) {
 	getGuides(function (err, guides) {
 		if (err) { cb(err); return; }
-		var allEntries = [];
+		const allEntries = [];
 		guides.forEach(function (guide) {
-			var entry = {name: guide.title, module: guide.name, type: "Guide", anchor: ""};
+			const entry = {name: guide.title, module: guide.name, type: "Guide", anchor: ""};
 			guide.html = createAnchor(entry) + guide.html;
 			guide.html = renderGuide({guide: guide});
 			allEntries.push(entry);
@@ -80,6 +80,4 @@ function getDocumentation(cb) {
 	});
 }
 
-module.exports = {
-	getDocumentation: getDocumentation
-};
+module.exports = { getDocumentation };

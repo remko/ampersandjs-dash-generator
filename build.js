@@ -1,27 +1,25 @@
-/* eslint no-path-concat:0, no-shadow: 0 */
+/* eslint no-path-concat:0 */
 
 "use strict";
 
-var moduleDetails = require('module-details');
-var packageInfo = require("./package.json");
-var config = packageInfo.config;
-var async = require("async");
-var _ = require("underscore");
-var fsExtra = require("fs-extra");
-var fs = require("fs");
-var jade = require("jade");
-var mustache = require("mustache");
-var sqlite3 = require('sqlite3').verbose();
-var tar = require("tar");
-var fstream = require("fstream");
-var zlib = require("zlib");
-var jsdom = require("jsdom");
-var strftime = require("strftime");
-var S = require("string");
+const packageInfo = require("./package.json");
+const config = packageInfo.config;
+const async = require("async");
+const _ = require("underscore");
+const fsExtra = require("fs-extra");
+const fs = require("fs");
+const jade = require("jade");
+const mustache = require("mustache");
+const sqlite3 = require('sqlite3').verbose();
+const tar = require("tar");
+const fstream = require("fstream");
+const zlib = require("zlib");
+const jsdom = require("jsdom");
+const S = require("string");
 
-var ampersandModules = require("./ampersand-modules");
-var ampersandGuides = require("./ampersand-guides");
-var amp = require("./amp");
+const ampersandModules = require("./ampersand-modules");
+const ampersandGuides = require("./ampersand-guides");
+const amp = require("./amp");
 
 ////////////////////////////////////////////////////////////////////////////////
 // Helpers
@@ -29,11 +27,11 @@ var amp = require("./amp");
 
 // Extract all links from a piece of HTML
 function getLinks(html, cb) {
-	jsdom.env({html: html, done: function (errors, window) {
+	jsdom.env({html, done: (errors, window) => {
 		if (errors) { return cb(errors); }
-		var result = [];
-		var links = window.document.querySelectorAll("a[href]");
-		for (var i = 0; i < links.length; ++i) {
+		const result = [];
+		const links = window.document.querySelectorAll("a[href]");
+		for (let i = 0; i < links.length; ++i) {
 			result.push(links[i].href);
 		}
 		cb(null, result);
@@ -43,9 +41,9 @@ function getLinks(html, cb) {
 function fixLinks(html, modules, guides) {
 	// Fix links in the html. 
 	// Not the most elegant or efficient solution. Clean this up.
-	var otherModules = _.sortBy(_.pluck(modules, 'title'), function (name) { return -name.length; });
-	otherModules.forEach(function (otherModule) {
-		var replacements = [
+	const otherModules = _.sortBy(_.pluck(modules, 'title'), name => -name.length);
+	otherModules.forEach(otherModule => {
+		const replacements = [
 			["href=\"#" + otherModule + "\"", "href=\"" + otherModule + ".html\""],
 
 			["href=\"/docs#" + otherModule + "\"", "href=\"" + otherModule + ".html\""],
@@ -63,18 +61,18 @@ function fixLinks(html, modules, guides) {
 			["href=\"https://github.com/ampersandjs/" + otherModule + "\"", "href=\"" + otherModule + ".html\""],
 			["href=\"https://github.com/AmpersandJS/" + otherModule + "\"", "href=\"" + otherModule + ".html\""]
 		];
-		_.each(replacements, function (replacement) {
+		_.each(replacements, replacement => {
 			html = S(html).replaceAll(replacement[0], replacement[1]);
 		});
 	});
 
-	var guideNames = _.sortBy(_.pluck(guides, 'name'), function (name) { return -name.length; });
-	guideNames.forEach(function (guideName) {
-		var replacements = [
+	const guideNames = _.sortBy(_.pluck(guides, 'name'), name => -name.length);
+	guideNames.forEach(guideName => {
+		const replacements = [
 			["href=\"http://ampersandjs.com/learn/" + guideName + "/\"", "href=\"" + guideName + ".html\""],
 			["href=\"http://ampersandjs.com/learn/" + guideName + "\"", "href=\"" + guideName + ".html\""]
 		];
-		_.each(replacements, function (replacement) {
+		_.each(replacements, replacement => {
 			html = S(html).replaceAll(replacement[0], replacement[1]);
 		});
 	});
@@ -82,23 +80,19 @@ function fixLinks(html, modules, guides) {
 	return html;
 }
 
-function createAnchor(entry) {
-	return "<a name=\"//apple_ref/cpp/" + entry.type + "/" + encodeURIComponent(entry.name.replace(/^\w+\./, "")) + "\" class=\"dashAnchor\"></a>";
-}
-
-var renderIndex = jade.compileFile(__dirname + "/index.jade", { pretty: true });
-var renderFeed = jade.compileFile(__dirname + "/feed.jade", { pretty: true });
+const renderIndex = jade.compileFile(__dirname + "/index.jade", { pretty: true });
+const renderFeed = jade.compileFile(__dirname + "/feed.jade", { pretty: true });
 
 
 ////////////////////////////////////////////////////////////////////////////////
 
 
-var DOCSET_DIR = __dirname + "/build/" + config.name + ".docset";
-var FEED_DIR = __dirname + "/build/feed";
-var USER_CONTRIBUTION_DIR = __dirname + "/build/user-contribution";
+const DOCSET_DIR = __dirname + "/build/" + config.name + ".docset";
+const FEED_DIR = __dirname + "/build/feed";
+const USER_CONTRIBUTION_DIR = __dirname + "/build/user-contribution";
 
-var timestamp = new Date();
-var docsetVersion = strftime("%F", timestamp) + "/" + strftime("%F_%H:%M:%S", timestamp);
+const timestamp = new Date(); // eslint-disable-line no-unused-vars
+const docsetVersion = '${strftime("%F", timestamp)}/${strftime("%F_%H:%M:%S", timestamp)}';
 
 fsExtra.removeSync(DOCSET_DIR);
 fsExtra.removeSync(FEED_DIR);
@@ -119,25 +113,24 @@ fsExtra.outputFileSync(
 
 // Create the database
 fsExtra.ensureDirSync(DOCSET_DIR + "/Contents/Resources");
-var db = new sqlite3.Database(DOCSET_DIR + "/Contents/Resources/docSet.dsidx");
+const db = new sqlite3.Database(DOCSET_DIR + "/Contents/Resources/docSet.dsidx");
 db.run("CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT)");
 
 
-var getDocumentationTasks = [
+const getDocumentationTasks = [
 	ampersandGuides.getDocumentation,
 	ampersandModules.getDocumentation,
 	amp.getDocumentation
 ];
 // getDocumentationTasks = [ require('./dummy').getDocumentation, require('./dummy').getDocumentation, amp.getDocumentation ];
 
-async.series(getDocumentationTasks, function (err, results) {
+async.series(getDocumentationTasks, (err, results) => {
 	if (err) { throw err; }
-	var allEntries = _.flatten(_.pluck(results, 'entries'));
-	var allPages = _.flatten(_.pluck(results, 'pages'));
-	var guidesPages = results[0].pages;
-	var modulesPages = results[1].pages;
+	const allEntries = _.flatten(_.pluck(results, 'entries'));
+	const allPages = _.flatten(_.pluck(results, 'pages'));
+	const [{pages: guidesPages}, {pages: modulesPages}] = results;
 	
-	_.each(allPages, function (page) {
+	_.each(allPages, page => {
 		page.html = fixLinks(page.html, modulesPages, guidesPages);
 		fsExtra.outputFileSync(
 			DOCSET_DIR + "/Contents/Resources/Documents/" + page.name + ".html", 
@@ -145,7 +138,7 @@ async.series(getDocumentationTasks, function (err, results) {
 	});
 
 	// Insert entries into database
-	allEntries.forEach(function (entry) {
+	allEntries.forEach(entry => {
 		db.run("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES (?, ?, ?)", 
 			entry.name, entry.type, entry.module + ".html#" + entry.anchor);
 	});
@@ -158,7 +151,7 @@ async.series(getDocumentationTasks, function (err, results) {
 		renderIndex({title: config.name, entries: _.groupBy(allEntries, 'type')}));
 
 	// Render the feed
-	var feed = FEED_DIR + "/" + config.name + ".xml";
+	const feed = FEED_DIR + "/" + config.name + ".xml";
 	fsExtra.outputFileSync(
 		feed,
 		mustache.render(fs.readFileSync("feed.xml.mustache", "utf-8"), {
@@ -195,25 +188,20 @@ async.series(getDocumentationTasks, function (err, results) {
 		.pipe(fs.createWriteStream(USER_CONTRIBUTION_DIR + "/" + config.name + ".tgz"));
 
 	// Collect external links
-	async.map(allPages, function (module, cb) {
-			getLinks(module.html, cb);
-		}, 
-		function (err, results) {
+	async.map(allPages, 
+		(module, cb) => getLinks(module.html, cb),
+		(err, results) => {
 			if (err) { console.err(err); return; }
-			var externalLinks = _.uniq(_.flatten(results))
-				.map(function (link) { return link.toLowerCase(); })
-				.filter(function (link) {
-					if (link.match(/^https?:\/\/github.com\/ampersandjs/)) {
-						return !link.match(/\/ampersandjs\/.*\.js$/) &&
-							!link.match(/\/ampersandjs\/ampersand\/(blob|issues)/);
-					}
-					return false;
-				});
+			const externalLinks = _.uniq(_.flatten(results))
+				.map(link => link.toLowerCase())
+				.filter(link =>
+					link.match(/^https?:\/\/github.com\/ampersandjs/) 
+						? !link.match(/\/ampersandjs\/.*\.js$/) 
+							&& !link.match(/\/ampersandjs\/ampersand\/(blob|issues)/)
+						: false);
 			if (externalLinks.length > 0) {
 				console.warn("Warning: External links found:");
-				externalLinks.forEach(function (link) {
-					console.log("- " + link);
-				});
+				externalLinks.forEach(link => console.log("- " + link));
 			}
 		});
 });
