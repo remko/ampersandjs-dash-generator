@@ -77,7 +77,9 @@
       "installing",
       "install",
       "important note on the 1.0.x versions",
-      "running the tests"
+      "running the tests",
+      "4.0.0 release plan",
+      "contributing"
     ],
     "feedBaseURL": "http://cdn.el-tramo.be/dash"
   },

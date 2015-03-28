@@ -37,11 +37,16 @@ function toc2indexEntries(toc, module, isClass) {
 				let name = entry.text
 					.replace(/\s+<code>.*/, '')
 					.replace(/\/.*/, '')
-					.replace(/^\w+\.extend/, '.extend'); // Subcollection-style
+					.replace(/^\w+\.extend/, '.extend') // Subcollection-style
+					.replace(/\s+- \[.*/, ''); // SelectView-style
 
 				let type;
 				if (name.match(/proxied ES5|underscore methods/)) {
 					return;
+				}
+				else if (module === 'ampersand-select-view' && name.match(/\(/)) {
+					type = 'Method';
+					name = className + '.' + name.replace(/\(.*/, '');
 				}
 				else if (name.match(/^constructor/) || name.match(/^new /)) {
 					type = 'Constructor';
