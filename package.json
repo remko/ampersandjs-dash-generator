@@ -4,8 +4,8 @@
   "description": "Generate a Dash docset for Ampersand.js",
   "scripts": {
     "start": "npm run build",
-    "build": "./node_modules/.bin/babel-node build.js",
-    "lint": "./node_modules/.bin/eslint ."
+    "build": "babel-node build.js",
+    "lint": "eslint ."
   },
   "keywords": [
     "dash"
