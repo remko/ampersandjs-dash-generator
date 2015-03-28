@@ -15,6 +15,7 @@ const fstream = require('fstream');
 const zlib = require('zlib');
 const jsdom = require('jsdom');
 const S = require('string');
+const strftime = require('strftime');
 
 const ampersandModules = require('./ampersand-modules');
 const ampersandGuides = require('./ampersand-guides');
@@ -92,8 +93,8 @@ const DOCSET_DIR = __dirname + '/build/' + config.name + '.docset';
 const FEED_DIR = __dirname + '/build/feed';
 const USER_CONTRIBUTION_DIR = __dirname + '/build/user-contribution';
 
-const timestamp = new Date(); // eslint-disable-line no-unused-vars
-const docsetVersion = '${strftime("%F", timestamp)}/${strftime("%F_%H:%M:%S", timestamp)}';
+const timestamp = new Date();
+const docsetVersion = `${strftime('%F', timestamp)}/${strftime('%F_%H:%M:%S', timestamp)}`;
 
 fsExtra.removeSync(DOCSET_DIR);
 fsExtra.removeSync(FEED_DIR);
