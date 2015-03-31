@@ -81,10 +81,14 @@
       "4.0.0 release plan",
       "contributing"
     ],
-    "feedBaseURL": "http://cdn.el-tramo.be/dash"
+    "feedBaseURL": "http://cdn.el-tramo.be/dash",
+    "ghooks": {
+      "pre-commit": "./node_modules/.bin/eslint ."
+    }
   },
   "devDependencies": {
     "babel": "^4.7.16",
-    "eslint": "^0.17.1"
+    "eslint": "^0.17.1",
+    "ghooks": "^0.3.0"
   }
 }
