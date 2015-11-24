@@ -14,8 +14,8 @@ const renderGuide = jade.compileFile(path.join(__dirname, '/guide.jade'), { pret
 function getGuides() {
 	// Log into GitHub
 	const github = new GitHubApi({
-			version: '3.0.0',
-			headers: { 'user-agent': packageInfo.name }
+		version: '3.0.0',
+		headers: { 'user-agent': packageInfo.name }
 	});
 	if (process.env.GITHUB_USER && process.env.GITHUB_PASS) {
 		github.authenticate({
